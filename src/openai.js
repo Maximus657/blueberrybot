@@ -39,10 +39,11 @@ class OpenAI{
         return response.data.text
      } catch (e) {
         console.log('erar', e.message)
-        if (e.response.status === 429) {
+        if (e.response.status === 429) 
             console.log('Too many requests, waiting for 10 second...')
-            await new Promise(resolve => setTimeout(resolve, 10000))
-            return this.transcription(filepath)}
+            
+        await new Promise(resolve => setTimeout(resolve, 10000))
+        return this.transcription(filepath)
      }
     }
 }  

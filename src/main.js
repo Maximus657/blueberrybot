@@ -17,24 +17,25 @@ bot.use(session())
 
 bot.command('new', async (ctx) => {
   ctx.session = INITIAL_SESSION
-  await ctx.reply('Жду твоего пиздежа')
+  await ctx.reply('Слушаю вас...')
 })
+
 bot.command('start', async (ctx) => {
   ctx.session = INITIAL_SESSION
-  await ctx.reply('Жду твоего пиздежа')
+  await ctx.reply('Слушаю вас...')
 })
 
 bot.on(message('voice'), async (ctx) => {
   ctx.session ??= INITIAL_SESSION
     try{
-      await ctx.reply(code('Ждем...'))
+      await ctx.reply(code('Один момент...'))
       const link = await ctx.telegram.getFileLink(ctx.message.voice.file_id)
       const userId = String(ctx.message.from.id)
       const oggPath = await ogg.create(link.href, userId)
       const mp3Path = await ogg.toMp3(oggPath, userId)
 
       const text = await openai.transcription(mp3Path)
-      await ctx.reply(code(`твой пиздеж...: ${text}`))
+      await ctx.reply(code(`вы сказали: ${text}`))
 
       ctx.session.messages.push({role: openai.roles.USER, content: text})
 
@@ -54,7 +55,7 @@ bot.on(message('voice'), async (ctx) => {
 bot.on(message('text'), async (ctx) => {
   ctx.session ??= INITIAL_SESSION
     try{
-      await ctx.reply(code('Ждем...'))
+      await ctx.reply('Одну минутку...')
 
       ctx.session.messages.push({
         role: openai.roles.USER,
@@ -72,6 +73,25 @@ bot.on(message('text'), async (ctx) => {
     } catch (e) {
        console.log('Error', e.message)
     }
+})
+
+bot.on('photo', async (ctx) => {
+  ctx.session ??= INITIAL_SESSION
+    try{
+      await ctx.reply('Я пока не умею работать с картинками, отправтье мне голосовое сообщение или просто напишите ваш запрос.')
+    } catch (e) {
+       console.log('Error', e.message)
+    }
+})
+
+bot.on('sticker', async (ctx) => {
+  ctx.session ??= INITIAL_SESSION
+  try{
+    const photo = ctx.update.message.photo
+    await ctx.reply('Ахах, смешняфка, а может просто спросишь уже меня о чем-нибудь?')
+  } catch (e) {
+     console.log('Error', e.message)
+  }
 })
 
 bot.launch()
